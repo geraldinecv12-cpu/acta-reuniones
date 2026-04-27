@@ -1,57 +1,43 @@
-import re
-from docx import Document
+import tkinter as tk
+from tkinter import filedialog
+import docx
+
+def select_input_file():
+    root = tk.Tk()  # Create a Tkinter root window
+    root.withdraw()  # Hide the root window
+    file_path = filedialog.askopenfilename(title='Select Input Transcript File')
+    return file_path
 
 
-def read_transcript(file_path):
-    with open(file_path, 'r') as file:
-        return file.readlines()
+def select_output_file():
+    root = tk.Tk()  # Create a Tkinter root window
+    root.withdraw()  # Hide the root window
+    file_path = filedialog.asksaveasfilename(defaultextension='.docx', title='Save Output DOCX File')
+    return file_path
 
 
-def extract_meeting_info(transcript_lines):
-    participants = []
-    agenda_items = []
-    discussed_topics = []
-    agreed_commits = []
-
-    for line in transcript_lines:
-        if line.startswith('Participant: '):
-            participants.append(line.replace('Participant: ', '').strip())
-        elif line.startswith('Agenda: '):
-            agenda_items.append(line.replace('Agenda: ', '').strip())
-        elif line.startswith('Discussed: '):
-            discussed_topics.append(line.replace('Discussed: ', '').strip())
-        elif line.startswith('Commit: '):
-            agreed_commits.append(line.replace('Commit: ', '').strip())
-
-    return participants, agenda_items, discussed_topics, agreed_commits
+def extract_meeting_info(transcript):
+    # Example implementation for extracting information
+    # This is where you'll implement your logic for parsing the transcript
+    meeting_info = "Extracted Meeting Information..."
+    return meeting_info
 
 
-def generate_document(participants, agenda_items, discussed_topics, agreed_commits, output_path):
-    doc = Document()
-    doc.add_heading('Meeting Minutes', level=1)
-    doc.add_heading('Participants', level=2)
-    for participant in participants:
-        doc.add_paragraph(participant)
+def generate_docx(meeting_info, output_file):
+    doc = docx.Document()
+    doc.add_heading('Meeting Information', level=1)
+    doc.add_paragraph(meeting_info)
+    doc.save(output_file)
 
-    doc.add_heading('Agenda Items', level=2)
-    for item in agenda_items:
-        doc.add_paragraph(item)
 
-    doc.add_heading('Discussed Topics', level=2)
-    for topic in discussed_topics:
-        doc.add_paragraph(topic)
-
-    doc.add_heading('Agreed Commitments', level=2)
-    for commit in agreed_commits:
-        doc.add_paragraph(commit)
-
-    doc.save(output_path)
-
+def main():
+    input_file = select_input_file()
+    output_file = select_output_file()
+    if input_file:
+        with open(input_file, 'r') as file:
+            transcript = file.read()
+            meeting_info = extract_meeting_info(transcript)
+            generate_docx(meeting_info, output_file)
 
 if __name__ == '__main__':
-    transcript_file = 'transcript.txt'  # Path to the transcript file
-    output_file = 'meeting_minutes.docx'  # Desired output DOCX file path
-
-    transcript_lines = read_transcript(transcript_file)
-    participants, agenda_items, discussed_topics, agreed_commits = extract_meeting_info(transcript_lines)
-    generate_document(participants, agenda_items, discussed_topics, agreed_commits, output_file)
+    main()
